@@ -48,6 +48,11 @@ public class CacheConfiguration {
             createCache(cm, com.tibebues.developer.domain.User.class.getName());
             createCache(cm, com.tibebues.developer.domain.Authority.class.getName());
             createCache(cm, com.tibebues.developer.domain.User.class.getName() + ".authorities");
+            createCache(cm, com.tibebues.developer.domain.Album.class.getName());
+            createCache(cm, com.tibebues.developer.domain.Photo.class.getName());
+            createCache(cm, com.tibebues.developer.domain.Photo.class.getName() + ".tags");
+            createCache(cm, com.tibebues.developer.domain.Tag.class.getName());
+            createCache(cm, com.tibebues.developer.domain.Tag.class.getName() + ".photos");
             // jhipster-needle-ehcache-add-entry
         };
     }
