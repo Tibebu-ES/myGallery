@@ -13,6 +13,8 @@ import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 
+import Gallery from 'react-photo-gallery';
+
 export interface IPhotoProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
 export const Photo = (props: IPhotoProps) => {
@@ -76,6 +78,13 @@ export const Photo = (props: IPhotoProps) => {
   };
 
   const { photoList, match, loading } = props;
+
+  const photoSet = photoList.map(photo => ({
+    src: `data:${photo.imageContentType};base64,${photo.image}`,
+    width: photo.height > photo.width ? 3 : photo.height === photo.width ? 1 : 4,
+    height: photo.height > photo.width ? 4 : photo.height === photo.width ? 1 : 3
+  }));
+
   return (
     <div>
       <h2 id="photo-heading">
@@ -86,6 +95,8 @@ export const Photo = (props: IPhotoProps) => {
           <Translate contentKey="tibeGalleryApp.photo.home.createLabel">Create new Photo</Translate>
         </Link>
       </h2>
+      <Gallery direction={"column"} columns={4} photos={photoSet} />
+
       <div className="table-responsive">
         <InfiniteScroll
           pageStart={paginationState.activePage}
