@@ -8,9 +8,7 @@ const Footer = props => (
   <div className="footer page-content">
     <Row>
       <Col md="12">
-        <p>
-          <Translate contentKey="footer">Your footer</Translate>
-        </p>
+        <p className="text-muted"> All Rights Reserved 2021 @Tibebu E.</p>
       </Col>
     </Row>
   </div>
