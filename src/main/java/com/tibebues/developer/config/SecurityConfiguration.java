@@ -90,8 +90,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .and()
             .httpBasic()
         .and()
-            .apply(securityConfigurerAdapter());
+            .apply(securityConfigurerAdapter())
+         .and()
+            .headers()
+            .frameOptions()
+            .disable()
+          .and()
+            .requiresChannel()
+            .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+            .requiresSecure();
         // @formatter:on
+
     }
 
     private JWTConfigurer securityConfigurerAdapter() {
