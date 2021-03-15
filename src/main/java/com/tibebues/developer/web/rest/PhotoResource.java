@@ -20,10 +20,26 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.xml.bind.DatatypeConverter;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.drew.metadata.jpeg.JpegDirectory;
+
+
 
 /**
  * REST controller for managing {@link com.tibebues.developer.domain.Photo}.
@@ -54,11 +70,17 @@ public class PhotoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/photos")
-    public ResponseEntity<Photo> createPhoto(@Valid @RequestBody Photo photo) throws URISyntaxException {
+    public ResponseEntity<Photo> createPhoto(@Valid @RequestBody Photo photo) throws URISyntaxException, IOException, MetadataException {
         log.debug("REST request to save Photo : {}", photo);
         if (photo.getId() != null) {
             throw new BadRequestAlertException("A new photo cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        try {
+            photo = setMetadata(photo);
+        } catch (ImageProcessingException ipe) {
+            log.error(ipe.getMessage());
+        }
+
         Photo result = photoRepository.save(photo);
         return ResponseEntity.created(new URI("/api/photos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -130,5 +152,37 @@ public class PhotoResource {
         log.debug("REST request to delete Photo : {}", id);
         photoRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+    }
+
+    //set meta data
+    private Photo setMetadata(Photo photo) throws ImageProcessingException, IOException, MetadataException {
+        String str = DatatypeConverter.printBase64Binary(photo.getImage());
+        byte[] data2 = DatatypeConverter.parseBase64Binary(str);
+        InputStream inputStream = new ByteArrayInputStream(data2);
+        BufferedInputStream bis = new BufferedInputStream(inputStream);
+        Metadata metadata = ImageMetadataReader.readMetadata(bis);
+        ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+
+        if (directory != null) {
+            Date date = directory.getDateDigitized();
+            if (date != null) {
+                photo.setTaken(date.toInstant());
+            }
+        }
+
+        if (photo.getTaken() == null) {
+            log.debug("Photo EXIF date digitized not available, setting taken on date to now...");
+            photo.setTaken(Instant.now());
+        }
+
+        photo.setUploaded(Instant.now());
+
+        JpegDirectory jpgDirectory = metadata.getFirstDirectoryOfType(JpegDirectory.class);
+        if (jpgDirectory != null) {
+            photo.setHeight(jpgDirectory.getImageHeight());
+            photo.setWidth(jpgDirectory.getImageWidth());
+        }
+
+        return photo;
     }
 }

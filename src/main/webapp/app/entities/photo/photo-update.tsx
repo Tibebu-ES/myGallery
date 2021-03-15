@@ -27,6 +27,51 @@ export const PhotoUpdate = (props: IPhotoUpdateProps) => {
 
   const { description, image, imageContentType } = photoEntity;
 
+  const metadata = (
+    <div>
+      <AvGroup>
+        <Label id="heightLabel" for="height">
+          <Translate contentKey="galleryApp.photo.height">Height</Translate>
+        </Label>
+        <AvField id="photo-height" type="number" className="form-control" name="height" readOnly />
+      </AvGroup>
+      <AvGroup>
+        <Label id="widthLabel" for="width">
+          <Translate contentKey="galleryApp.photo.width">Width</Translate>
+        </Label>
+        <AvField id="photo-width" type="number" className="form-control" name="width" readOnly />
+      </AvGroup>
+      <AvGroup>
+        <Label id="takenLabel" for="taken">
+          <Translate contentKey="galleryApp.photo.taken">Taken</Translate>
+        </Label>
+        <AvInput
+          id="photo-taken"
+          type="datetime-local"
+          className="form-control"
+          name="taken"
+          readOnly
+          value={isNew ? null : convertDateTimeFromServer(photoEntity.taken)}
+        />
+      </AvGroup>
+      <AvGroup>
+        <Label id="uploadedLabel" for="uploaded">
+          <Translate contentKey="galleryApp.photo.uploaded">Uploaded</Translate>
+        </Label>
+        <AvInput
+          id="photo-uploaded"
+          type="datetime-local"
+          className="form-control"
+          name="uploaded"
+          readOnly
+          value={isNew ? null : convertDateTimeFromServer(photoEntity.uploaded)}
+        />
+      </AvGroup>
+    </div>
+  );
+
+  const metadataRows = isNew ? '' : metadata;
+
   const handleClose = () => {
     props.history.push('/photo');
   };
@@ -154,44 +199,7 @@ export const PhotoUpdate = (props: IPhotoUpdateProps) => {
                   />
                 </AvGroup>
               </AvGroup>
-              <AvGroup>
-                <Label id="heightLabel" for="photo-height">
-                  <Translate contentKey="tibeGalleryApp.photo.height">Height</Translate>
-                </Label>
-                <AvField id="photo-height" type="string" className="form-control" name="height" />
-              </AvGroup>
-              <AvGroup>
-                <Label id="widthLabel" for="photo-width">
-                  <Translate contentKey="tibeGalleryApp.photo.width">Width</Translate>
-                </Label>
-                <AvField id="photo-width" type="string" className="form-control" name="width" />
-              </AvGroup>
-              <AvGroup>
-                <Label id="takenLabel" for="photo-taken">
-                  <Translate contentKey="tibeGalleryApp.photo.taken">Taken</Translate>
-                </Label>
-                <AvInput
-                  id="photo-taken"
-                  type="datetime-local"
-                  className="form-control"
-                  name="taken"
-                  placeholder={'YYYY-MM-DD HH:mm'}
-                  value={isNew ? displayDefaultDateTime() : convertDateTimeFromServer(props.photoEntity.taken)}
-                />
-              </AvGroup>
-              <AvGroup>
-                <Label id="uploadedLabel" for="photo-uploaded">
-                  <Translate contentKey="tibeGalleryApp.photo.uploaded">Uploaded</Translate>
-                </Label>
-                <AvInput
-                  id="photo-uploaded"
-                  type="datetime-local"
-                  className="form-control"
-                  name="uploaded"
-                  placeholder={'YYYY-MM-DD HH:mm'}
-                  value={isNew ? displayDefaultDateTime() : convertDateTimeFromServer(props.photoEntity.uploaded)}
-                />
-              </AvGroup>
+              {metadataRows}
               <AvGroup>
                 <Label for="photo-album">
                   <Translate contentKey="tibeGalleryApp.photo.album">Album</Translate>

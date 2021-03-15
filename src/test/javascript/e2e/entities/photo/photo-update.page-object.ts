@@ -49,38 +49,6 @@ export default class PhotoUpdatePage {
     return this.imageInput.getAttribute('value');
   }
 
-  async setHeightInput(height) {
-    await this.heightInput.sendKeys(height);
-  }
-
-  async getHeightInput() {
-    return this.heightInput.getAttribute('value');
-  }
-
-  async setWidthInput(width) {
-    await this.widthInput.sendKeys(width);
-  }
-
-  async getWidthInput() {
-    return this.widthInput.getAttribute('value');
-  }
-
-  async setTakenInput(taken) {
-    await this.takenInput.sendKeys(taken);
-  }
-
-  async getTakenInput() {
-    return this.takenInput.getAttribute('value');
-  }
-
-  async setUploadedInput(uploaded) {
-    await this.uploadedInput.sendKeys(uploaded);
-  }
-
-  async getUploadedInput() {
-    return this.uploadedInput.getAttribute('value');
-  }
-
   async albumSelectLastOption() {
     await this.albumSelect.all(by.tagName('option')).last().click();
   }
@@ -135,17 +103,7 @@ export default class PhotoUpdatePage {
     await waitUntilDisplayed(this.saveButton);
     await this.setImageInput(absolutePath);
     await waitUntilDisplayed(this.saveButton);
-    await this.setHeightInput('5');
-    expect(await this.getHeightInput()).to.eq('5');
-    await waitUntilDisplayed(this.saveButton);
-    await this.setWidthInput('5');
-    expect(await this.getWidthInput()).to.eq('5');
-    await waitUntilDisplayed(this.saveButton);
-    await this.setTakenInput('01/01/2001' + protractor.Key.TAB + '02:30AM');
-    expect(await this.getTakenInput()).to.contain('2001-01-01T02:30');
-    await waitUntilDisplayed(this.saveButton);
-    await this.setUploadedInput('01/01/2001' + protractor.Key.TAB + '02:30AM');
-    expect(await this.getUploadedInput()).to.contain('2001-01-01T02:30');
+
     await this.albumSelectLastOption();
     // this.tagSelectLastOption();
     await this.save();
